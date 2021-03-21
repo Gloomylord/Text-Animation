@@ -9,7 +9,9 @@ canvas.height = window.innerHeight;
     let particleArray = [];
 
     const color1 = '#fff';
-    const color2 = 'red';
+    let hue = 0;
+    let sw = 133;
+    let sh = 30;
 
     const mouse = {
         x: null,
@@ -17,8 +19,8 @@ canvas.height = window.innerHeight;
         radius: 150
     };
 
-    const addJustX = 100;
-    const addJustY = 250;
+    let addJustX = (canvas.width - sw * 10) / 2;
+    let addJustY = (canvas.height - sh * 10) / 2;
 
     window.addEventListener('mousemove', (e) => {
         mouse.x = e.x;
@@ -31,10 +33,27 @@ canvas.height = window.innerHeight;
         mouse.y = undefined;
     });
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '30px Verdana';
-    ctx.fillText('Hello coder', 0, 30);
-    const textCoordinates = ctx.getImageData(0, 0, 170, 100);
+    window.addEventListener("resize", ()=> {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        addJustX = (canvas.width - sw * 10) / 2;
+        addJustY = (canvas.height - sh * 10) / 2;
+        init();
+    });
+
+    ctx.fillStyle = color1;
+    ctx.font = '27px Verdana';
+    if (window.innerWidth > 1350)
+        ctx.fillText('Hello Coder', 0, 27);
+    else {
+        ctx.fillText('Hello', 4, 27);
+        ctx.fillText('Coder', 0, 57);
+        sw = 66;
+        sh = 57;
+        addJustX = (window.innerWidth - sw * 10) / 2;
+        addJustY = (window.innerHeight - sh * 10) / 2;
+    }
+    const textCoordinates = ctx.getImageData(0, 0, sw, sh);
 
     class Particle {
         constructor(x, y, color) {
@@ -68,7 +87,7 @@ canvas.height = window.innerHeight;
             if (distance < mouse.radius) {
                 this.x -= directionX;
                 this.y -= directionY;
-                this.color = color2;
+                this.color = `hsl(${hue}, 100%, 50%)`;
             } else {
                 this.color = color1;
                 if (this.x !== this.bazeX) {
@@ -107,6 +126,11 @@ canvas.height = window.innerHeight;
         requestAnimationFrame(animate);
     }
 
+    function hueRotate() {
+        hue+= .4;
+        requestAnimationFrame(hueRotate);
+    }
+
     function connect() {
         for (let i = 0; i < particleArray.length; i++) {
             for (let j = i + 1; j < particleArray.length; j++) {
@@ -117,10 +141,10 @@ canvas.height = window.innerHeight;
                 let test = 600;
                 if (distance < test) {
                     let opacity = (test - distance) / test;
-                    if (elem1.color === color2 && elem1.color === color2) {
-                        ctx.strokeStyle = `rgba(250,0,0,${opacity})`;
+                    if (elem1.color !== color1 && elem1.color !== color1) {
+                        ctx.strokeStyle = `hsla(${hue}, 100%, 50%, ${opacity})`;
                     } else {
-                        ctx.strokeStyle = `rgba(255,255,255,${opacity})`;
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
                     }
 
                     ctx.lineWidth = 2;
@@ -134,8 +158,8 @@ canvas.height = window.innerHeight;
 
     }
 
-
     init();
+    hueRotate();
     animate();
 
 })();
